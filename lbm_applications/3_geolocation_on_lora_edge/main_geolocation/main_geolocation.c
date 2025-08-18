@@ -55,6 +55,7 @@
 #include "smtc_hal_watchdog.h"
 
 #include "lr11xx_system.h"
+#include "lr11xx_types.h"
 
 #include "lr1110_board.h"
 
@@ -246,6 +247,7 @@ static void modem_event_callback( void )
 {
     SMTC_HAL_TRACE_MSG_COLOR( "get_event () callback\n", HAL_DBG_TRACE_COLOR_BLUE );
 
+    lr11xx_status_t                                             status;
     smtc_modem_event_t                                          current_event;
     uint8_t                                                     event_pending_count;
     uint8_t                                                     stack_id = STACK_ID;
@@ -254,6 +256,7 @@ static void modem_event_callback( void )
     smtc_modem_almanac_demodulation_event_data_almanac_update_t almanac_update_data;
     smtc_modem_wifi_event_data_scan_done_t                      wifi_scan_done_data;
     smtc_modem_wifi_event_data_terminated_t                     wifi_terminated_data;
+
 
     // Continue to read modem event until all event has been processed
     do
@@ -268,6 +271,12 @@ static void modem_event_callback( void )
 
 #if !defined( USE_LR11XX_CREDENTIALS )
             /* Set user credentials */
+            status = lr11xx_system_read_uid( NULL, user_dev_eui );
+            if( status != LR11XX_STATUS_OK )
+            {
+                SMTC_HAL_TRACE_ERROR( "Failed to get LR11XX UID\n" );
+                mcu_panic( );
+            }
             smtc_modem_set_deveui( stack_id, user_dev_eui );
             smtc_modem_set_joineui( stack_id, user_join_eui );
             smtc_modem_set_nwkkey( stack_id, user_app_key );

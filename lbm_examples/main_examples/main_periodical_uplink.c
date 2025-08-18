@@ -58,6 +58,9 @@
 #include "smtc_modem_relay_api.h"
 #include <string.h>
 
+#include "lr11xx_types.h"
+#include "lr11xx_system.h"
+
 /*
  * -----------------------------------------------------------------------------
  * --- PRIVATE MACROS-----------------------------------------------------------
@@ -143,7 +146,7 @@
  * @brief Stack credentials
  */
 #if !defined( USE_LR11XX_CREDENTIALS )
-static const uint8_t user_dev_eui[8]      = USER_LORAWAN_DEVICE_EUI;
+static uint8_t user_dev_eui[8];
 static const uint8_t user_join_eui[8]     = USER_LORAWAN_JOIN_EUI;
 static const uint8_t user_gen_app_key[16] = USER_LORAWAN_GEN_APP_KEY;
 static const uint8_t user_app_key[16]     = USER_LORAWAN_APP_KEY;
@@ -297,6 +300,7 @@ static void modem_event_callback( void )
     smtc_modem_event_t current_event;
     uint8_t            event_pending_count;
     uint8_t            stack_id = STACK_ID;
+    lr11xx_status_t    status;
 
     // Continue to read modem event until all event has been processed
     do
@@ -311,6 +315,13 @@ static void modem_event_callback( void )
 
 #if !defined( USE_LR11XX_CREDENTIALS )
             // Set user credentials
+            status = lr11xx_system_read_uid( NULL, user_dev_eui );
+            if( status != LR11XX_STATUS_OK )
+            {
+                SMTC_HAL_TRACE_ERROR( "Failed to get LR11XX UID\n" );
+                mcu_panic( );
+            }
+
             ASSERT_SMTC_MODEM_RC( smtc_modem_set_deveui( stack_id, user_dev_eui ) );
             ASSERT_SMTC_MODEM_RC( smtc_modem_set_joineui( stack_id, user_join_eui ) );
             ASSERT_SMTC_MODEM_RC( smtc_modem_set_appkey( stack_id, user_gen_app_key ) );
