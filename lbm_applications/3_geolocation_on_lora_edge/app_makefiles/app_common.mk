@@ -251,11 +251,15 @@ APP_C_SOURCES += \
 
 ifeq ($(MODEM_APP),nc)
 APP_C_SOURCES += \
+	../../bmp280/bmp2.c \
+	../../bmp280/bmp2_bsp.c \
 	main_geolocation/main_geolocation.c
 endif
 
 ifeq ($(MODEM_APP),EXAMPLE_GEOLOCATION)
 APP_C_SOURCES += \
+	../../bmp280/bmp2.c \
+	../../bmp280/bmp2_bsp.c \
 	main_geolocation/main_geolocation.c
 endif
 
@@ -278,6 +282,7 @@ RADIO_HAL_C_SOURCES += \
 
 COMMON_C_INCLUDES +=  \
 	-I.\
+	-I../../bmp280\
 	-Iradio_hal\
 	-Ismtc_modem_hal\
 	-I$(LORA_BASICS_MODEM)/smtc_modem_api\

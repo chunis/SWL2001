@@ -84,6 +84,12 @@ extern "C" {
 #define SMTC_LED_SCAN           PB_5
 #endif
 
+/* I2C for Pressure Sensors */
+#define HAL_I2C2_ID             2
+
+#define SMTC_I2C2_SCL           PB_10
+#define SMTC_I2C2_SDA           PB_11
+
 //Hw modem specific pinout
 #define HW_MODEM_COMMAND_PIN    PC_6
 #define HW_MODEM_EVENT_PIN      PC_5

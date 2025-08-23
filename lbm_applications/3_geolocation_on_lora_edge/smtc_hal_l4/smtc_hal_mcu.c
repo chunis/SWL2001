@@ -49,6 +49,7 @@
 #include "smtc_hal_uart.h"
 #include "smtc_hal_rtc.h"
 #include "smtc_hal_spi.h"
+#include "smtc_hal_i2c.h"
 #include "smtc_hal_lp_timer.h"
 #include "smtc_hal_watchdog.h"
 
@@ -157,6 +158,9 @@ void hal_mcu_init( void )
 
     // Initialize SPI for radio
     hal_spi_init( RADIO_SPI_ID, RADIO_SPI_MOSI, RADIO_SPI_MISO, RADIO_SPI_SCLK );
+
+    // Initialize I2C
+    hal_i2c_init( HAL_I2C2_ID, SMTC_I2C2_SDA, SMTC_I2C2_SCL );
 
     // Initialize RTC (for real time and wut)
     hal_rtc_init( );
@@ -411,6 +415,7 @@ static void sleep_handler( void )
 static void lpm_mcu_deinit( void )
 {
     hal_spi_de_init( RADIO_SPI_ID );
+    hal_i2c_deinit( HAL_I2C2_ID );
 
 #if defined( HW_MODEM_ENABLED )
     uart4_deinit( );
@@ -465,6 +470,9 @@ static void lpm_mcu_reinit( void )
 
     // Initialize SPI
     hal_spi_init( RADIO_SPI_ID, RADIO_SPI_MOSI, RADIO_SPI_MISO, RADIO_SPI_SCLK );
+
+    // Initialize I2C
+    hal_i2c_init( HAL_I2C2_ID, SMTC_I2C2_SDA, SMTC_I2C2_SCL );
 }
 
 #endif
