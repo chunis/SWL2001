@@ -309,7 +309,7 @@ static void mw_wifi_scan_service_on_launch( void* context_callback )
     rp_task.hook_id                        = mw_wifi_task_obj.rp_hook_id;
     rp_task.state                          = RP_TASK_STATE_ASAP;
     rp_task.start_time_ms                  = smtc_modem_hal_get_time_in_ms( ) + 300; /* 300ms for scheduling delay */
-    rp_task.duration_time_ms               = 10 * 1000; /* Provision 10 seconds for WiFi scan duration */
+    rp_task.duration_time_ms               = 20 * 1000; /* Provision 20 seconds for WiFi scan duration */
     rp_task.type                           = RP_TASK_TYPE_WIFI_SNIFF;
     rp_task.launch_task_callbacks          = wifi_rp_task_launch;
     rp_radio_params_t fake_rp_radio_params = { 0 };

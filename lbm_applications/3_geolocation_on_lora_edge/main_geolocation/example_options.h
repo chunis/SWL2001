@@ -67,13 +67,13 @@ extern "C" {
     }
 #define USER_LORAWAN_APP_KEY                                                                           \
     {                                                                                                  \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF2, 0x00 \
     }
 
 /**
  * @brief Modem Region define
  */
-#define MODEM_EXAMPLE_REGION SMTC_MODEM_REGION_EU_868
+#define MODEM_EXAMPLE_REGION SMTC_MODEM_REGION_CN_470_RP_1_0
 
 #ifdef __cplusplus
 }

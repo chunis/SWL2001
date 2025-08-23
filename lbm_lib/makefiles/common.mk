@@ -382,6 +382,7 @@ RADIO_PLANNER_C_SOURCES += \
 
 LBM_C_INCLUDES +=  \
 	-I.\
+	-I../bmp280\
 	-Ismtc_modem_api\
 	-Ismtc_modem_core\
 	-Ismtc_modem_core/logging\

@@ -56,8 +56,9 @@
 
 #include "lr11xx_system.h"
 #include "lr11xx_types.h"
-
 #include "lr1110_board.h"
+
+#include "bmp2_bsp.h"
 
 /*
  * -----------------------------------------------------------------------------
@@ -190,6 +191,8 @@ void main_geolocation( void )
     // called immediately after the first call to smtc_modem_run_engine because of the reset detection
     smtc_modem_init( &modem_event_callback );
 
+    bmp2_init_bsp( );
+
     // Re-enable IRQ
     hal_mcu_enable_irq( );
 
@@ -214,6 +217,8 @@ void main_geolocation( void )
                               lr11xx_fw_version.fw );
     }
     SMTC_HAL_TRACE_INFO( "LR11XX FW: 0x%04X, type: 0x%02X\n", lr11xx_fw_version.fw, lr11xx_fw_version.type );
+
+    smtc_modem_wifi_set_payload_format( STACK_ID, SMTC_MODEM_WIFI_PAYLOAD_MAC_RSSI );
 
     while( 1 )
     {

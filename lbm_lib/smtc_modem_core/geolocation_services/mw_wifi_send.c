@@ -56,6 +56,8 @@
 #include "store_and_forward.h"
 #endif
 
+#include "bmp2_bsp.h"
+
 /*
  * -----------------------------------------------------------------------------
  * --- PRIVATE MACROS-----------------------------------------------------------
@@ -128,9 +130,20 @@
 #define WIFI_TAG_SIZE ( 1 )
 
 /**
- * @brief Default LoRaWAN port to send uplink with Wi-Fi scan results
+ * @brief LoRaWAN port used for uplinks of app data (baroceptor data + WIFI scan results)
  */
-#define WIFI_DEFAULT_UPLINK_PORT ( 197 )
+#define APP_PORT 66
+
+/**
+ * @brief Size in bytes to store the node type and altitude
+ */
+#define WIFI_BARO_SIZE ( 3 )
+
+/**
+ * @brief Pressure sensor type: 0 - reference node, 1 - work node
+ */
+#define WIFI_BARO_TYPE ( 1 )
+
 
 /*
  * -----------------------------------------------------------------------------
@@ -168,7 +181,7 @@ static mw_wifi_send_t mw_wifi_send_obj = { 0 };
 /*!
  * @brief The buffer containing results to be sent over the air
  */
-static uint8_t wifi_result_buffer[WIFI_TAG_SIZE + ( ( WIFI_AP_RSSI_SIZE + WIFI_AP_ADDRESS_SIZE ) * WIFI_MAX_RESULTS )];
+static uint8_t wifi_result_buffer[WIFI_BARO_SIZE + WIFI_TAG_SIZE + ( ( WIFI_AP_RSSI_SIZE + WIFI_AP_ADDRESS_SIZE ) * WIFI_MAX_RESULTS )];
 
 /*!
  * @brief Current result buffer size
@@ -226,10 +239,10 @@ void mw_wifi_send_services_init( uint8_t* service_id, uint8_t task_id,
 
     mw_wifi_send_obj.wifi_results   = NULL;
     mw_wifi_send_obj.nb_scans_sent  = 0;
-    mw_wifi_send_obj.fport          = WIFI_DEFAULT_UPLINK_PORT;
+    mw_wifi_send_obj.fport          = APP_PORT;
     mw_wifi_send_obj.is_busy        = false;
     mw_wifi_send_obj.send_mode      = SMTC_MODEM_SEND_MODE_UPLINK;
-    mw_wifi_send_obj.payload_format = SMTC_MODEM_WIFI_PAYLOAD_MAC;
+    mw_wifi_send_obj.payload_format = SMTC_MODEM_WIFI_PAYLOAD_MAC_RSSI;
 }
 
 void mw_wifi_send_add_task( const wifi_scan_all_result_t* wifi_results )
@@ -428,7 +441,30 @@ static void trace_print_event_data_terminated( const smtc_modem_wifi_event_data_
 static void prepare_tx_buffer( void )
 {
     /* Add the payload format tag */
-    wifi_result_buffer_size                     = 0;
+    wifi_result_buffer_size   = 0;
+    uint16_t baro_altitude    = 0;
+    uint32_t baro_pressure    = 0;
+    uint16_t baro_temperature = 0;
+
+    /* Get altitude value by barometric data */
+    bmp2_get_data( &baro_altitude, &baro_pressure, &baro_temperature );
+    wifi_result_buffer[wifi_result_buffer_size] = WIFI_BARO_TYPE;
+    wifi_result_buffer[wifi_result_buffer_size + 1] = baro_altitude & 0xff;
+    wifi_result_buffer[wifi_result_buffer_size + 2] = ( baro_altitude >> 8 ) & 0xff;
+
+    /*
+    wifi_result_buffer[wifi_result_buffer_size + 3] = baro_pressure & 0xff;
+    wifi_result_buffer[wifi_result_buffer_size + 4] = ( baro_pressure >> 8 ) & 0xff;
+    wifi_result_buffer[wifi_result_buffer_size + 5] = ( baro_pressure >> 16 ) & 0xff;
+    wifi_result_buffer[wifi_result_buffer_size + 6] = ( baro_pressure >> 24 ) & 0xff;
+
+    wifi_result_buffer[wifi_result_buffer_size + 7] = baro_temperature & 0xff;
+    wifi_result_buffer[wifi_result_buffer_size + 8] = ( baro_temperature >> 8 ) & 0xff;
+    */
+
+    wifi_result_buffer_size += WIFI_BARO_SIZE;
+
+
     wifi_result_buffer[wifi_result_buffer_size] = mw_wifi_send_obj.payload_format;
     wifi_result_buffer_size += WIFI_TAG_SIZE;
 
