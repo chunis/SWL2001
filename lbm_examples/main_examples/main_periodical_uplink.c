@@ -60,6 +60,7 @@
 
 #include "lr11xx_types.h"
 #include "lr11xx_system.h"
+#include "bmp2_bsp.h"
 
 /*
  * -----------------------------------------------------------------------------
@@ -82,6 +83,13 @@
  */
 #define xstr( a ) str( a )
 #define str( a ) #a
+
+/**
+ * @brief Pressure sensor type. 0: reference node, 1: mobile node
+ */
+#define LORAWAN_BARO_TYPE ( 0 )
+
+#define APP_PORT 66
 
 /*!
  * @brief Helper macro that returned a human-friendly message if a command does not return SMTC_MODEM_RC_OK
@@ -243,6 +251,8 @@ void main_periodical_uplink( void )
     // called immediately after the first call to smtc_modem_run_engine because of the reset detection
     smtc_modem_init( &modem_event_callback );
 
+    bmp2_init_bsp( );
+
     // Configure Nucleo blue button as EXTI
     hal_gpio_irq_t nucleo_blue_button = {
         .pin      = EXTI_BUTTON,
@@ -268,8 +278,7 @@ void main_periodical_uplink( void )
             // Check if the device has already joined a network
             if( ( status_mask & SMTC_MODEM_STATUS_JOINED ) == SMTC_MODEM_STATUS_JOINED )
             {
-                // Send the uplink counter on port 102
-                send_uplink_counter_on_port( 102 );
+                send_uplink_counter_on_port( APP_PORT );
             }
         }
 
@@ -372,8 +381,7 @@ static void modem_event_callback( void )
 
         case SMTC_MODEM_EVENT_ALARM:
             SMTC_HAL_TRACE_INFO( "Event received: ALARM\n" );
-            // Send periodical uplink on port 101
-            send_uplink_counter_on_port( 101 );
+            send_uplink_counter_on_port( APP_PORT );
             // Restart periodical uplink alarm
             ASSERT_SMTC_MODEM_RC( smtc_modem_alarm_start_timer( PERIODICAL_UPLINK_DELAY_S ) );
             break;
@@ -382,8 +390,8 @@ static void modem_event_callback( void )
             SMTC_HAL_TRACE_INFO( "Event received: JOINED\n" );
             SMTC_HAL_TRACE_INFO( "Modem is now joined \n" );
 
-            // Send first periodical uplink on port 101
-            send_uplink_counter_on_port( 101 );
+            // Send first periodical uplink
+            send_uplink_counter_on_port( APP_PORT );
             // start periodical uplink alarm
             ASSERT_SMTC_MODEM_RC( smtc_modem_alarm_start_timer( DELAY_FIRST_MSG_AFTER_JOIN ) );
             break;
@@ -556,13 +564,37 @@ static void user_button_callback( void* context )
 
 static void send_uplink_counter_on_port( uint8_t port )
 {
-    // Send uplink counter on port 102
-    uint8_t buff[4] = { 0 };
-    buff[0]         = ( uplink_counter >> 24 ) & 0xFF;
-    buff[1]         = ( uplink_counter >> 16 ) & 0xFF;
-    buff[2]         = ( uplink_counter >> 8 ) & 0xFF;
-    buff[3]         = ( uplink_counter & 0xFF );
-    ASSERT_SMTC_MODEM_RC( smtc_modem_request_uplink( STACK_ID, port, false, buff, 4 ) );
+    uint8_t buff[16];
+    uint8_t  app_data_size = 0;
+    uint16_t baro_altitude = 0;
+    uint32_t baro_pressure = 0;
+    uint16_t baro_temperature = 0;
+
+    /* Get altitude value by barometric data */
+    bmp2_get_data( &baro_altitude, &baro_pressure, &baro_temperature );
+
+    buff[app_data_size++] = LORAWAN_BARO_TYPE;
+    buff[app_data_size++] = baro_altitude & 0xff;
+    buff[app_data_size++] = ( baro_altitude >> 8 ) & 0xff;
+
+    /*
+    buff[app_data_size++] = baro_pressure & 0xff;
+    buff[app_data_size++] = ( baro_pressure >> 8 ) & 0xff;
+    buff[app_data_size++] = ( baro_pressure >> 16 ) & 0xff;
+    buff[app_data_size++] = ( baro_pressure >> 24 ) & 0xff;
+
+    buff[app_data_size++] = baro_temperature & 0xff;
+    buff[app_data_size++] = ( baro_temperature >> 8 ) & 0xff;
+    */
+
+    buff[app_data_size++] = ( uplink_counter >> 24 ) & 0xFF;
+    buff[app_data_size++] = ( uplink_counter >> 16 ) & 0xFF;
+    buff[app_data_size++] = ( uplink_counter >> 8 ) & 0xFF;
+    buff[app_data_size++] = ( uplink_counter & 0xFF );
+
+    SMTC_HAL_TRACE_ARRAY( "Send payload", buff, app_data_size );
+    ASSERT_SMTC_MODEM_RC( smtc_modem_request_uplink( STACK_ID, port, false, buff, app_data_size ) );
+
     // Increment uplink counter
     uplink_counter++;
 }

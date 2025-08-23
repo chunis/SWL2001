@@ -70,7 +70,7 @@ extern "C" {
     }
 #define USER_LORAWAN_APP_KEY                                                                           \
     {                                                                                                  \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xF2, 0x00 \
     }
 
 /**
@@ -78,7 +78,7 @@ extern "C" {
  */
 #ifndef MODEM_EXAMPLE_REGION
 #if !defined( SX128X )
-#define MODEM_EXAMPLE_REGION SMTC_MODEM_REGION_EU_868
+#define MODEM_EXAMPLE_REGION SMTC_MODEM_REGION_CN_470_RP_1_0
 #else
 #define MODEM_EXAMPLE_REGION SMTC_MODEM_REGION_WW2G4
 #endif

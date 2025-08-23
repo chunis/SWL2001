@@ -159,7 +159,7 @@ void region_cn_470_rp_1_0_init( smtc_real_t* real )
 void region_cn_470_rp_1_0_config( smtc_real_t* real )
 {
     // Tx 125 kHz channels
-    for( uint8_t i = 0; i < real_const.const_number_of_tx_channel; i++ )
+    for( uint8_t i = 0; i < 8; i++ )
     {
         // Enable default datarate
         dr_bitfield_tx_channel[i] = real_const.const_default_tx_dr_bit_field;

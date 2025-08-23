@@ -97,7 +97,7 @@ extern uint32_t freq_tx_cn470_mono_channel_mhz;
 
 #define LBT_SUPPORTED_CN_470_RP_1_0                (true)
 #define LBT_SNIFF_DURATION_MS_CN_470_RP_1_0        (5)             // TODO value must be checked
-#define LBT_THRESHOLD_DBM_CN_470_RP_1_0            (int16_t)(-80)  // TODO value must be checked
+#define LBT_THRESHOLD_DBM_CN_470_RP_1_0            (int16_t)(-60)  // TODO value must be checked
 #define LBT_BW_HZ_CN_470_RP_1_0                    (200000)        // TODO value must be checked
 
 #define CF_LIST_SUPPORTED_CN_470_RP_1_0            (CF_LIST_CH_MASK)
