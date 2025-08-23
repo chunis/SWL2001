@@ -36,11 +36,16 @@
  * -----------------------------------------------------------------------------
  * --- DEPENDENCIES ------------------------------------------------------------
  */
-#include "stm32l4xx_hal.h"
-#include "smtc_hal.h"
-#include "bmp2_bsp.h"
 #include <math.h>
+
+#include "stm32l4xx_hal.h"
+
 #include "smtc_modem_hal.h"
+#include "smtc_hal_i2c.h"
+#include "modem_pinout.h"
+#include "smtc_hal_dbg_trace.h"
+
+#include "bmp2_bsp.h"
 
 /*
  * -----------------------------------------------------------------------------
@@ -215,20 +220,20 @@ void bmp2_get_data( uint16_t *altitude, uint32_t *pressure, uint16_t *temperatur
             /* Read compensated data */
             bmp2_get_sensor_data( &comp_data, &dev );
 
-            #ifdef BMP2_64BIT_COMPENSATION
+#ifdef BMP2_64BIT_COMPENSATION
             comp_data.pressure = comp_data.pressure / 256;
-            #endif
+#endif
 
-            #ifdef BMP2_DOUBLE_COMPENSATION
+#ifdef BMP2_DOUBLE_COMPENSATION
             altitude_temp = pressure_to_altitude( comp_data.pressure );
             altitude_sum += altitude_temp;
             pressure_sum += comp_data.pressure;
             temperature_sum += comp_data.temperature;
             
-            #else
+#else
             printf("Data[%d]:    Temperature: %ld deg C	Pressure: %lu Pa\n", idx, (long int)comp_data.temperature,
                    (long unsigned int)comp_data.pressure);
-            #endif
+#endif
 
             idx++;
         }
@@ -245,8 +250,9 @@ void bmp2_get_data( uint16_t *altitude, uint32_t *pressure, uint16_t *temperatur
     temperature_temp = temperature_sum / ALTITUDE_AVERAGE_NUM;
     *temperature = (uint16_t)( temperature_temp * 10 );
     
-    hal_mcu_trace_print("\n Average Altitude: %.4lf m, Average Pressure: %.4lf Pa, Average Temperature: %.4lf deg C    \n\n",
-                           altitude_temp, pressure_temp, temperature_temp );
+    hal_trace_print_var("\n Average Altitude: %d.%03d m, ", (int)altitude_temp, (int) ((altitude_temp - (int)altitude_temp) * 1000));
+    hal_trace_print_var("Average Pressure: %d.%03d Pa, ", (int)pressure_temp, (int) ((pressure_temp - (int)pressure_temp) * 1000));
+    hal_trace_print_var("Average Temperature: %d.%03d deg C\n\n ", (int)temperature_temp, (int) ((temperature_temp - (int)temperature_temp) * 1000));
 }
 
 /* --- EOF ------------------------------------------------------------------ */
