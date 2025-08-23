@@ -69,6 +69,7 @@ extern "C" {
 #define RADIO_SPI_MOSI          PA_7
 #define RADIO_SPI_MISO          PA_6
 #define RADIO_SPI_SCLK          PA_5
+
 #if defined( SX1272 ) || defined( SX1276 )
 #define RADIO_NSS               PB_6
 #define RADIO_DIO_0             PA_10
@@ -100,6 +101,12 @@ extern "C" {
 #define SMTC_LED_TX             PC_1
 #define SMTC_LED_SCAN           PB_5
 #endif
+
+/* I2C for Pressure Sensors */
+#define HAL_I2C2_ID             2
+
+#define SMTC_I2C2_SCL           PB_10
+#define SMTC_I2C2_SDA           PB_11
 
 
 #define EXTI_BUTTON             PC_13
