@@ -59,11 +59,11 @@ extern "C" {
  */
 #define USER_LORAWAN_DEVICE_EUI                        \
     {                                                  \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 \
     }
 #define USER_LORAWAN_JOIN_EUI                          \
     {                                                  \
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 \
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01 \
     }
 #define USER_LORAWAN_APP_KEY                                                                           \
     {                                                                                                  \

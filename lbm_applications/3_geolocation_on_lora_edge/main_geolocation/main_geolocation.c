@@ -90,7 +90,7 @@
  * @brief Stack credentials
  */
 #if !defined( USE_LR11XX_CREDENTIALS )
-static const uint8_t user_dev_eui[8]  = USER_LORAWAN_DEVICE_EUI;
+static uint8_t user_dev_eui[8];
 static const uint8_t user_join_eui[8] = USER_LORAWAN_JOIN_EUI;
 static const uint8_t user_app_key[16] = USER_LORAWAN_APP_KEY;
 #endif
@@ -297,8 +297,8 @@ static void modem_event_callback( void )
             /* Schedule a Join LoRaWAN network */
             smtc_modem_join_network( stack_id );
             /* Start almanac demodulation service */
-            smtc_modem_almanac_demodulation_set_constellations( stack_id, SMTC_MODEM_GNSS_CONSTELLATION_GPS_BEIDOU );
-            smtc_modem_almanac_demodulation_start( stack_id );
+            // smtc_modem_almanac_demodulation_set_constellations( stack_id, SMTC_MODEM_GNSS_CONSTELLATION_GPS_BEIDOU );
+            // smtc_modem_almanac_demodulation_start( stack_id );
             /* Set GNSS and Wi-Fi send mode */
             smtc_modem_store_and_forward_flash_clear_data( stack_id );
             smtc_modem_store_and_forward_set_state( stack_id, SMTC_MODEM_STORE_AND_FORWARD_ENABLE );
@@ -307,8 +307,8 @@ static void modem_event_callback( void )
             /* Program Wi-Fi scan */
             smtc_modem_wifi_scan( stack_id, 0 );
             /* Program GNSS scan */
-            smtc_modem_gnss_set_constellations( stack_id, SMTC_MODEM_GNSS_CONSTELLATION_GPS_BEIDOU );
-            smtc_modem_gnss_scan( stack_id, SMTC_MODEM_GNSS_MODE_MOBILE, 0 );
+            // smtc_modem_gnss_set_constellations( stack_id, SMTC_MODEM_GNSS_CONSTELLATION_GPS_BEIDOU );
+            // smtc_modem_gnss_scan( stack_id, SMTC_MODEM_GNSS_MODE_MOBILE, 0 );
             /* Notify user with leds */
             smtc_board_led_set( smtc_board_get_led_tx_mask( ), true );
             break;
